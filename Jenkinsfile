@@ -3,11 +3,11 @@ pipeline {
     stages {
         stage('Debug') {
             steps {
-                // Явно клонируем — обходим все проблемы с checkout scm
+                // Проверяем, что мы в нужной директории и файлы на месте
                 sh '''
-                    git clone https://github.com/AlexanderZavgorodniy/python-unit-test-base.git .
+                    echo "Текущая директория: $(pwd)"
                     ls -la
-                    cat requirements.txt || echo "⚠️ requirements.txt MISSING"
+                    cat requirements.txt  # Убираем echo "MISSING", так как файл должен быть
                     python --version
                 '''
             }
