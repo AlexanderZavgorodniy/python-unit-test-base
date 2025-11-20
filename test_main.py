@@ -1,12 +1,13 @@
 import unittest
+from main import add, greet
 
-from main import min_of_three_vars
+class TestMain(unittest.TestCase):
+    def test_add(self):
+        self.assertEqual(add(2, 3), 5)
+        self.assertEqual(add(-1, 1), 0)
 
+    def test_greet(self):
+        self.assertEqual(greet("Alice"), "Hello, Alice!")
 
-class MinOfThreeVarsTestCase(unittest.TestCase):
-
-    def test_min_a(self):
-        // your test here
-
-
-        
+if __name__ == '__main__':
+    unittest.main()
