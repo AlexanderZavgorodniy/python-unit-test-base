@@ -1,5 +1,10 @@
 pipeline {
-    agent { docker 'python:3.12-slim' }
+    agent {
+        docker {
+            image 'python:3.12-slim'
+            args '-u root'  // ← КЛЮЧЕВОЕ ИЗМЕНЕНИЕ
+        }
+    }
 
     stages {
         stage('Install') {
@@ -14,7 +19,6 @@ pipeline {
                     coverage run -m unittest discover -v
                     coverage report
                     coverage html
-                    coverage xml
                 '''
             }
         }
@@ -22,10 +26,7 @@ pipeline {
 
     post {
         always {
-            // Сохраняем HTML-отчёт как артефакт (доступен в "Artifacts")
             archiveArtifacts artifacts: 'htmlcov/**', allowEmptyArchive: true
-            // coverage.xml тоже можно сохранить, если нужно:
-            // archiveArtifacts artifacts: 'coverage.xml'
         }
     }
 }
