@@ -4,23 +4,16 @@ pipeline {
     stages {
         stage('Install') {
             steps {
-                sh 'pip install coverage'
+                sh 'pip install --no-cache-dir coverage'
             }
         }
 
         stage('Test + Coverage') {
             steps {
                 sh '''
-                    # Запуск всех тестов через unittest с покрытием
                     coverage run -m unittest discover -v
-
-                    # Отчёт в консоль (виден в логе Jenkins)
                     coverage report
-
-                    # Генерация HTML-отчёта
                     coverage html
-
-                    # Генерация XML-отчёта для интеграции (Cobertura)
                     coverage xml
                 '''
             }
@@ -29,18 +22,10 @@ pipeline {
 
     post {
         always {
-            // Сохранить HTML-отчёт как артефакт
+            // Сохраняем HTML-отчёт как артефакт (доступен в "Artifacts")
             archiveArtifacts artifacts: 'htmlcov/**', allowEmptyArchive: true
-
-            // Опционально: опубликовать отчёт в UI Jenkins (требует плагин "HTML Publisher")
-            publishHTML target: [
-                allowMissing: false,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'htmlcov',
-                reportFiles: 'index.html',
-                reportName: 'Coverage Report'
-            ]
+            // coverage.xml тоже можно сохранить, если нужно:
+            // archiveArtifacts artifacts: 'coverage.xml'
         }
     }
 }
