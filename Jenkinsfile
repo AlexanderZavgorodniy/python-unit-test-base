@@ -3,23 +3,26 @@ pipeline {
     stages {
         stage('Debug') {
             steps {
-                // Проверяем, что мы в нужной директории и файлы на месте
                 sh '''
                     echo "Текущая директория: $(pwd)"
                     ls -la
-                    cat requirements.txt  # Убираем echo "MISSING", так как файл должен быть
-                    python --version
+                    echo "Содержимое requirements.txt:"
+                    cat requirements.txt
+                    echo "Python версия:"
+                    python3 --version
+                    echo "Pip версия:"
+                    pip3 --version
                 '''
             }
         }
         stage('Install') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh 'pip3 install -r requirements.txt'
             }
         }
         stage('Test') {
             steps {
-                sh 'python -m pytest'
+                sh 'python3 -m pytest'
             }
         }
     }
