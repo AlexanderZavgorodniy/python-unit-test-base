@@ -1,30 +1,46 @@
 pipeline {
-    agent any
+    agent { docker 'python:3.12-slim' }
+
     stages {
         stage('Install') {
             steps {
-                sh 'python3 -m pip install --user coverage'
+                sh 'pip install coverage'
             }
         }
+
         stage('Test + Coverage') {
             steps {
                 sh '''
-                    python3 -m coverage run -m unittest discover -v
-                    python3 -m coverage report
-                    python3 -m coverage html
-                    python3 -m coverage xml
+                    # Запуск всех тестов через unittest с покрытием
+                    coverage run -m unittest discover -v
+
+                    # Отчёт в консоль (виден в логе Jenkins)
+                    coverage report
+
+                    # Генерация HTML-отчёта
+                    coverage html
+
+                    # Генерация XML-отчёта для интеграции (Cobertura)
+                    coverage xml
                 '''
             }
-            post {
-                always {
-                    archiveArtifacts artifacts: 'htmlcov/**', allowEmptyArchive: true
-                    publishHTML target: [
-                        reportDir: 'htmlcov',
-                        reportFiles: 'index.html',
-                        reportName: 'Coverage Report'
-                    ]
-                }
-            }
+        }
+    }
+
+    post {
+        always {
+            // Сохранить HTML-отчёт как артефакт
+            archiveArtifacts artifacts: 'htmlcov/**', allowEmptyArchive: true
+
+            // Опционально: опубликовать отчёт в UI Jenkins (требует плагин "HTML Publisher")
+            publishHTML target: [
+                allowMissing: false,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'htmlcov',
+                reportFiles: 'index.html',
+                reportName: 'Coverage Report'
+            ]
         }
     }
 }
