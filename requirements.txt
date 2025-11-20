@@ -1,4 +1,1 @@
-nose2
-parameterized
 coverage
-cov-core
